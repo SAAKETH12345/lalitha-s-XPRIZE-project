@@ -1,8 +1,20 @@
 import { GoogleGenAI } from '@google/genai';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 export const handler = async (event, context) => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  
+  if (!apiKey) {
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ error: "GEMINI_API_KEY environment variable is not set in Netlify." })
+    };
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   const forecastData = {
     analysisDate: '2026-07-14',
     currentBalance: 456.20,

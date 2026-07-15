@@ -393,6 +393,14 @@ document.addEventListener("DOMContentLoaded", () => {
     
     try {
       const response = await fetch('/api/forecast');
+      if (!response.ok) {
+        let errMsg = \`HTTP error! status: \${response.status}\`;
+        try {
+          const errorData = await response.json();
+          if (errorData.error) errMsg = errorData.error;
+        } catch(e) {}
+        throw new Error(errMsg);
+      }
       const data = await response.json();
       currentLoanLetter = data.loanLetter;
       
@@ -458,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error(err);
-      forecastContent.innerHTML = `<div class="text-center text-rose-400 py-8">Failed to fetch forecast data.</div>`;
+      forecastContent.innerHTML = `<div class="text-center text-rose-400 py-8">Failed to fetch forecast data: ${err.message}</div>`;
     }
   });
 
