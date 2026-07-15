@@ -29,7 +29,7 @@ export const handler = async (event, context) => {
   };
 
   try {
-    const prompt = \`
+    const prompt = `
 You are an expert Virtual Treasurer AI. Based on the following financial forecast, write a highly professional, math-backed short-term working capital micro-loan request letter to a bank (DBS Bank Ltd).
 
 Our company name is [Company Name]. We need a $3,000.00 micro-loan to bridge a cash flow timing mismatch.
@@ -44,7 +44,7 @@ Financial context:
 - Estimated shortfall: $1,723.85
 
 The letter should be structured with clear headings like "Context & Financial Analysis", "Cause of the Cash Flow Gap", and "Loan Details & Repayment Strategy". Keep it objective, precise, and professional. Only return the text of the letter.
-\`;
+`;
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
