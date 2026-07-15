@@ -1,21 +1,8 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const PORT = 3000;
-
-app.use(express.static(path.join(__dirname, 'web-interface')));
-
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// Forecast data as seen in the PDF
-app.get('/api/forecast', async (req, res) => {
+export const handler = async (event, context) => {
   const forecastData = {
     analysisDate: '2026-07-14',
     currentBalance: 456.20,
@@ -42,7 +29,7 @@ app.get('/api/forecast', async (req, res) => {
   };
 
   try {
-    const prompt = `
+    const prompt = \`
 You are an expert Virtual Treasurer AI. Based on the following financial forecast, write a highly professional, math-backed short-term working capital micro-loan request letter to a bank (DBS Bank Ltd).
 
 Our company name is [Company Name]. We need a $3,000.00 micro-loan to bridge a cash flow timing mismatch.
@@ -57,20 +44,29 @@ Financial context:
 - Estimated shortfall: $1,723.85
 
 The letter should be structured with clear headings like "Context & Financial Analysis", "Cause of the Cash Flow Gap", and "Loan Details & Repayment Strategy". Keep it objective, precise, and professional. Only return the text of the letter.
-`;
+\`;
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
     
     forecastData.loanLetter = response.text;
-    res.json(forecastData);
+    
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(forecastData)
+    };
   } catch (error) {
     console.error("Gemini API Error:", error);
-    res.status(500).json({ error: "Failed to generate loan letter" });
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ error: "Failed to generate loan letter" })
+    };
   }
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-});
+};
