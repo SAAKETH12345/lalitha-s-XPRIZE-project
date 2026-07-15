@@ -394,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch('/api/forecast');
       if (!response.ok) {
-        let errMsg = \`HTTP error! status: \${response.status}\`;
+        let errMsg = `HTTP error! status: ${response.status}`;
         try {
           const errorData = await response.json();
           if (errorData.error) errMsg = errorData.error;
